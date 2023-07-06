@@ -49,6 +49,50 @@ const signup = async (req, res, next) => {
   }
 };
 
+const signin = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Every field is mandatory",
+    });
+  }
+
+  const user = await userModel
+    .findOne({
+      email,
+    })
+    .select("+password");
+
+  if (!user || user.password === password) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid Credential",
+    });
+  }
+  try {
+    const token = user.jwtToken();
+    user.password = undefined;
+
+    const cokkieOption = {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    };
+
+    res.cookie("token", token, cookieOption);
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: json,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   signup,
+  signin,
 };
