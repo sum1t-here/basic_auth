@@ -62,7 +62,7 @@ const signin = async (req, res) => {
     .findOne({
       email,
     })
-    .select("+password");
+    .select("password");
 
   if (!user || user.password === password) {
     return res.status(400).json({
