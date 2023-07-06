@@ -33,7 +33,7 @@ const userSchema = new Schema(
 );
 
 userSchema.methods = {
-  jwToken() {
+  jwtToken() {
     return JWT.sign({ id: this._id, email: this.email }, process.env.SECRET, {
       expiresIn: "24h",
     });

@@ -62,9 +62,9 @@ const signin = async (req, res) => {
     .findOne({
       email,
     })
-    .select("password");
+    .select("+password");
 
-  if (!user || user.password === password) {
+  if (!user || user.password !== password) {
     return res.status(400).json({
       success: false,
       message: "Invalid Credential",
@@ -74,7 +74,7 @@ const signin = async (req, res) => {
     const token = user.jwtToken();
     user.password = undefined;
 
-    const cokkieOption = {
+    const cookieOption = {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
     };
@@ -86,7 +86,7 @@ const signin = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      success: json,
+      success: false,
       message: error.message,
     });
   }
